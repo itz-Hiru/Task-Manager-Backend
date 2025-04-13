@@ -4,6 +4,11 @@ const cors = require("cors");
 const path = require("path");
 const connectDB = require("./config/db.config");
 
+const authRoutes = require("./routes/authRoutes.route");
+const userRoutes = require("./routes/userRoutes.route");
+const taskRoutes = require("./routes/taskRoutes.route");
+const reportRoutes = require("./routes/reportRoutes.route");
+
 const app = express();
 
 // Middleware handle cors
@@ -23,7 +28,7 @@ app.use(express.json());
 connectDB();
 
 // Routes
-// app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes);
 // app.use("/api/users", userRoutes);
 // app.use("/api/tasks", taskRoutes);
 // app.use("/api/report", reportRoutes);

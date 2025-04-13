@@ -1,0 +1,81 @@
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/User.model");
+
+// Generate JWT Token
+const generateToken = (userId) => {
+    return jwt.sign({ id: userId }, process.env.JWT_SECRET, { expiresIn: "7d" });
+};
+
+// Signup new user ( POST -> /api/auth/register )
+const registerUser = async (req, res) => {
+    try {
+        const { name, email, password, profileImageUrl, adminInviteToken } = req.body;
+
+        // Check user is already exists
+        const existsUser = await User.findOne({ email });
+        if (existsUser) {
+            return res.status(400).json({ message: "User is already exists with the email."})
+        }
+
+        // User role: Admin if token is provided else only member
+        let role = "member";
+        if (adminInviteToken && adminInviteToken === process.env.ADMIN_INVITE_TOKEN) {
+            role = "admin";
+        }
+
+        // Secure password
+        const salt = await bcrypt.genSalt(10);
+        const securePassword = await bcrypt.hash(password, salt);
+
+        // Signup new user
+        const user = await User.create({
+            name,
+            email,
+            password: securePassword,
+            profileImageUrl,
+            role,
+        });
+
+        // Return user data
+        res.status(201).json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            profileImageUrl: user.profileImageUrl,
+            token: generateToken(user._id)
+        })
+    } catch (e) {
+        res.status(500).json({ message: "Server error!", error: e.message})
+    }
+};
+
+// Login existing user ( POST -> /api/auth/login )
+const loginUser = async (req, res) => {
+    try {
+        
+    } catch (e) {
+        res.status(500).json({ message: "Server error!", error: e.message})
+    }
+};
+
+// Get user profile ( GET -> /api/auth/profile ) Private router
+const getUserProfile = async (req, res) => {
+    try {
+        
+    } catch (e) {
+        res.status(500).json({ message: "Server error!", error: e.message})
+    }
+};
+
+// Update user profile ( PUT -> /api/auth/profile/update ) Private router
+const updateUserProfile = async (req, res) => {
+    try {
+        
+    } catch (e) {
+        res.status(500).json({ message: "Server error!", error: e.message})
+    }
+};
+
+module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile };
