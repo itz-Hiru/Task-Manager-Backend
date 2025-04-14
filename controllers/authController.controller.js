@@ -84,7 +84,13 @@ const loginUser = async (req, res) => {
 // Get user profile ( GET -> /api/auth/profile ) Private router
 const getUserProfile = async (req, res) => {
     try {
-        
+        const user = await User.findById(req.user.id).select("-password");
+
+        if(!user) {
+            return res.status(401).json({ message: "User not found!" });
+        }
+
+        res.json(user);
     } catch (e) {
         res.status(500).json({ message: "Server error!", error: e.message})
     }

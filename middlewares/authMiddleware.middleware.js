@@ -2,14 +2,14 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User.model");
 
 // Protect authorization routes Midddleware
-const protect = async (req, res) => {
+const protect = async (req, res, next) => {
   try {
     let token = req.headers.authorization;
 
-    if (token && token.startswith("Bearer")) {
+    if (token && token.startsWith("Bearer ")) {
       token = token.split(" ")[1]; // Extract token
-      const decode = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decode.id).select("-password");
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await User.findById(decoded.id).select("-password");
       next();
     } else {
       res.status(401).json({ message: "Not authorized. No token!" });
@@ -24,11 +24,9 @@ const adminOnly = (req, res, next) => {
   if (req.user && req.user.role === "admin") {
     next();
   } else {
-    req
-      .status(403)
-      .json({
-        message: "Access denied! This feature available for admins only.",
-      });
+    req.status(403).json({
+      message: "Access denied! This feature available for admins only.",
+    });
   }
 };
 
