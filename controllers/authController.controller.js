@@ -54,7 +54,28 @@ const registerUser = async (req, res) => {
 // Login existing user ( POST -> /api/auth/login )
 const loginUser = async (req, res) => {
     try {
-        
+        const {email, password} = req.body;
+
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ message: "User not found with the email" });
+        }
+
+        // Compare passwords
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Invalid password" });
+        }
+
+        // Return user data
+        res.json({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            profileImageUrl: user.profileImageUrl,
+            token: generateToken(user._id),
+        });
     } catch (e) {
         res.status(500).json({ message: "Server error!", error: e.message})
     }
