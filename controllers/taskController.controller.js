@@ -43,7 +43,7 @@ const getTasks = async (req, res) => {
     let filter = {};
 
     if (status) {
-      filter.status;
+      filter.status = status;
     }
 
     let tasks;
