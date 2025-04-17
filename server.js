@@ -24,12 +24,12 @@ app.use(
 app.use(express.json());
 0;
 
-// Connect database to servre
+// Connect database to server
 connectDB();
 
 // Routes
 app.use("/api/auth", authRoutes);
-app.use("/uploads",  express.static(path.join(__dirname, "uploads"))) // Profile image uploading route
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Profile image uploading route
 app.use("/api/users", userRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/report", reportRoutes);
