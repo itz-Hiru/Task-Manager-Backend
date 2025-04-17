@@ -83,7 +83,7 @@ const getTasks = async (req, res) => {
 
     const inProgressTasks = await Task.countDocuments({
       ...filter,
-      status: "In progress",
+      status: "In Progress",
       ...(req.user.role !== "admin" && { assignedTo: req.user._id }),
     });
 
@@ -193,7 +193,7 @@ const updateTaskCheckList = async (req, res) => {
     if (task.progress === 100) {
       task.status = "Completed";
     } else if (task.progress > 0) {
-      task.status = "In progress";
+      task.status = "In Progress";
     } else {
       task.status = "Pending";
     }
@@ -272,7 +272,7 @@ const getAdminDashboardData = async (req, res) => {
     });
 
     // Ensure all possible statuses are included
-    const taskStatuses = ["Pending", "In progress", "Completed"];
+    const taskStatuses = ["Pending", "In Progress", "Completed"];
     const taskDistributionRaw = await Task.aggregate([
       {
         $group: {
@@ -352,10 +352,10 @@ const getDashboardData = async (req, res) => {
     });
 
     // Task distribution by status
-    const taskStatuses = ["Pending", "In progress", "Completed"];
+    const taskStatuses = ["Pending", "In Progress", "Completed"];
     const taskDistributionRaw = await Task.aggregate([
       { $match: { assignedTo: userId } },
-      { $group: { _id: "$status", count: { $sum: 1 } } }, // ✅ Fixed here
+      { $group: { _id: "$status", count: { $sum: 1 } } },
     ]);
 
     const taskDistribution = taskStatuses.reduce((acc, status) => {
