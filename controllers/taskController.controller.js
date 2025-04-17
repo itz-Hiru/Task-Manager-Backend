@@ -335,7 +335,7 @@ const getDashboardData = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    //  Fetch statistics for user specific tasks
+    // Fetch statistics for user-specific tasks
     const totalTasks = await Task.countDocuments({ assignedTo: userId });
     const pendingTasks = await Task.countDocuments({
       assignedTo: userId,
@@ -355,8 +355,9 @@ const getDashboardData = async (req, res) => {
     const taskStatuses = ["Pending", "In progress", "Completed"];
     const taskDistributionRaw = await Task.aggregate([
       { $match: { assignedTo: userId } },
-      { $group: { _id: "status", count: { $sum: 1 } } },
+      { $group: { _id: "$status", count: { $sum: 1 } } }, // ✅ Fixed here
     ]);
+
     const taskDistribution = taskStatuses.reduce((acc, status) => {
       const formattedKey = status.replace(/\s+/g, "");
       acc[formattedKey] =
@@ -369,8 +370,9 @@ const getDashboardData = async (req, res) => {
     const taskPriorities = ["Low", "Medium", "High"];
     const taskPriorityLevelRow = await Task.aggregate([
       { $match: { assignedTo: userId } },
-      { $group: { _id: "priority", count: { $sum: 1 } } },
+      { $group: { _id: "$priority", count: { $sum: 1 } } },
     ]);
+
     const taskPriorityLevels = taskPriorities.reduce((acc, priority) => {
       acc[priority] =
         taskPriorityLevelRow.find((item) => item._id === priority)?.count || 0;
