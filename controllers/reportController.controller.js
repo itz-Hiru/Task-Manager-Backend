@@ -11,7 +11,6 @@ const exportTaskReport = async (req, res) => {
     const workSheet = workBook.addWorksheet("Tasks Report");
 
     workSheet.columns = [
-      { header: "Task ID", key: "_id", width: 25 },
       { header: "Title", key: "title", width: 30 },
       { header: "Description", key: "description", width: 60 },
       { header: "Priority", key: "priority", width: 20 },
@@ -55,7 +54,10 @@ const exportTaskReport = async (req, res) => {
 // GET -> /api/report/export/users (Admin Only)
 const exportUsersReport = async (req, res) => {
   try {
-    const users = await User.find().select("name email _id").lean();
+    const users = await User.find({ role: "member" })
+      .select("name email _id")
+      .lean();
+
     const userTasks = await Task.find().populate(
       "assignedTo",
       "name email _id"
